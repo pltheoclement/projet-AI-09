@@ -24,3 +24,5 @@ if __name__ == '__main__':
     home = get_home(jsonObject)
 
     nb_vehicules = trucks['amount']
+
+    

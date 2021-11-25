@@ -25,12 +25,12 @@ def get_areas(customers, nb_trucks, home):
         centers.append(customers[n])
 
     #boucle à partir de là
-    areas = [[home] for i in range(nb_areas)]
+    areas = [[] for i in range(nb_areas)]
     old_areas = None
     # On sépare l'espace actuel en nb_areas espaces
     while areas != old_areas:
         old_areas = areas.copy()
-        areas = [[home] for i in range(nb_areas)]
+        areas = [[] for i in range(nb_areas)]
         for customer in customers:
             distances = [0 for i in range(nb_areas)]
             for i, center in enumerate(centers):
@@ -51,9 +51,9 @@ def get_area_center(l):
     x_value_sum = 0
     g_sum = 0
     for customer in l:
-        x_value_sum += customer['x']
-        y_value_sum += customer['y']
-        g_sum += 1# customer['value']
+        x_value_sum += customer['x']*customer['value']
+        y_value_sum += customer['y']*customer['value']
+        g_sum += customer['value']
 
     x = x_value_sum / g_sum
     y = y_value_sum / g_sum

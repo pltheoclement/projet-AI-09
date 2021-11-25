@@ -1,11 +1,8 @@
 {
-    "trucks": [
-        {
-            "distance": 20
-        }, {
+    "trucks": {
+            "amount": 2,
             "distance": 11
-        }
-    ],
+        },
     "home": {
         "x": 5,
         "y": 4

@@ -18,27 +18,28 @@ def get_customers(jsonObject):
 def get_home(jsonObject):
     return jsonObject['home']
 
-def get_areas(customers, nb_trucks):
+def get_areas(customers, nb_trucks, home):
     nb_areas = min(nb_trucks, len(customers))
     centers = []
     for n in range(nb_areas):
         centers.append(customers[n])
 
     #boucle à partir de là
-    areas = [[]]*nb_areas
+    areas = [[home] for i in range(nb_areas)]
     old_areas = None
     # On sépare l'espace actuel en nb_areas espaces
     while areas != old_areas:
-        old_areas = areas
+        old_areas = areas.copy()
+        areas = [[home] for i in range(nb_areas)]
         for customer in customers:
-            distances = [0]*nb_areas
+            distances = [0 for i in range(nb_areas)]
             for i, center in enumerate(centers):
                 distance = distance_between_customers(customer, center)
                 distances[i] = distance
             index = get_index_of_min(distances)
             areas[index].append(customer)
-            
-
+            print(areas)
+            print('\n')
         for n in range(nb_areas):
             center[n] = get_area_center(areas[n])
     return areas
@@ -50,9 +51,9 @@ def get_area_center(l):
     x_value_sum = 0
     g_sum = 0
     for customer in l:
-        x_value_sum += customer['x']*customer['value']
-        y_value_sum += customer['y']*customer['value']
-        g_sum += customer['value']
+        x_value_sum += customer['x']
+        y_value_sum += customer['y']
+        g_sum += 1# customer['value']
 
     x = x_value_sum / g_sum
     y = y_value_sum / g_sum
@@ -81,4 +82,4 @@ if __name__ == '__main__':
 
     nb_vehicules = trucks['amount']
 
-    print(get_areas(customers, nb_vehicules))
+    print(get_areas(customers, nb_vehicules, home))

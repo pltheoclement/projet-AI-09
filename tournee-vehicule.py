@@ -3,31 +3,46 @@ import numpy as np
 
 path = "./data.json"
 
+# Fonction permettant de récupérer les données depuis un fichier JSON
 def format_json(path):
 	with open(path, encoding="utf8") as jsonFile:
 	    jsonObject = json.load(jsonFile)
 	    jsonFile.close()
 	return jsonObject
 
+# Fonction permettant de récupérer les données liées au camions à partir de l'objet JSON
 def get_trucks(jsonObject):
     return jsonObject['trucks']
 
+# Fonction permettant de récupérer les données liées au clients à partir de l'objet JSON
 def get_customers(jsonObject):
     return jsonObject['customers']
 
+# Fonction permettant de récupérer les données liées au dépot à partir de l'objet JSON
 def get_home(jsonObject):
     return jsonObject['home']
 
+# Cette fonction permet de découper le nuage de point en plusieurs aires.
+# Params : 
+#   customers : une liste de points avec des valeurs
+#   nb_trucks : le nombre de camions disponible pour la tournée
+#
+# Return : Une liste de liste de points.
+# Catte fonction découpe l'espace en plusieurs zone. Le nombre de zones est déterminé par le nombre de camions.
+# Chaque camion fera une tournée dans une et une seule zone
 def get_areas(customers, nb_trucks):
+    # Dans le cas où il y a plus de camions que de clients, chaque zone représentera un seul client.
     nb_areas = min(nb_trucks, len(customers))
     centers = []
+
+    # On choisi un client par zone pour débuter notre découpage
     for n in range(nb_areas):
         centers.append(customers[n])
 
-    #boucle à partir de là
     areas = [[] for i in range(nb_areas)]
     old_areas = None
     # On sépare l'espace actuel en nb_areas espaces
+    # tant que le découpage en zone n'évolue pas d'une instance à l'autre on continue.
     while areas != old_areas:
         old_areas = areas.copy()
         areas = [[] for i in range(nb_areas)]
@@ -38,10 +53,14 @@ def get_areas(customers, nb_trucks):
                 distances[i] = distance
             index = get_index_of_min(distances)
             areas[index].append(customer)
+        
+        # On calcule les centres de gravité des différentes zones calculées. Ces centres servent à trouver les points les plus proches.
         for n in range(nb_areas):
             centers[n] = get_area_center(areas[n])
     return areas
 
+# FOnction servant à calculer le centre de gravité d'un nuage de point
+# On lui fournie une liste de points, elle en ressort son centre de gravité
 def get_area_center(l):
     x = 0
     y = 0
@@ -60,16 +79,19 @@ def get_area_center(l):
     center['y'] = y
     return center
 
+# Fonction permettant de calculer la distance euclidienne entre deux points
 def distance_between_customers(c1, c2):
     c1_coord = np.array((c1['x'], c1['y']))
     c2_coord = np.array((c2['x'], c2['y']))
     d = np.linalg.norm(c1_coord-c2_coord)
     return d
 
+# FOnction permettant de retourner le premier index de la plus petite valeur d'une liste.
 def get_index_of_min(l):
     temp = min(l)
     return [i for i, j in enumerate(l) if j == temp][0]
 
+# Certains clients ne sont pas acessibles par les camions, on les retire donc de notre domaine d'étude.
 def remove_unaccessible_customers(customers, trucks, home):
     accessible_customers = []
     for customer in customers:
@@ -77,22 +99,20 @@ def remove_unaccessible_customers(customers, trucks, home):
             accessible_customers.append(customer)
     return accessible_customers
 
+# Afin d'avoir un rapport cohérent entre la distance et les valeurs des clients on applique un coeficient à la valeur.
+# L'interval des distances devient donc similaire à l'interval des valeurs
 def coef_reduce_value(area, home):
     values = []
     distances = []
     for customer in area:
         values.append(customer['value'])
         distances.append(distance_between_customers(customer, home))
-
-    
     min_value = max(values)
     min_distance = max(distances)
-    print("\n")
-    print(min_distance / min_value)
-    print("\n")
-    print("\n")
     return min_distance / min_value
 
+# Cette fonction implémente l'algorithme du plus proche voisin.
+# On cherche ici à maximiser la distance. La distance n'est pas la distance euclidienne mais la valeur atténuée par le coef divisé par la distance euclidienne 
 def ppv(c, list_of_available_customers, coef):
     dist = 0
     choice = None
@@ -104,6 +124,7 @@ def ppv(c, list_of_available_customers, coef):
             choice = customer
     return choice
 
+# Cette fonction calcul le chemin d'un camion au sein d'un espace de recherche
 def path_in_area(area, home, trucks):
     list_of_available_customers = area
     current_point = home
@@ -125,6 +146,7 @@ def path_in_area(area, home, trucks):
     path.append(home)
     return total_value, path
 
+# cette fonction fait boucler la précédente sur tous les espaces précédents et en retourne la valeur totale obtenue ainsi que l'ordre de visite des clients dans les différentes tournées.
 def main(customers, home, trucks):
     areas = get_areas(customers, trucks['amount'])
     total_value = 0
@@ -144,7 +166,7 @@ if __name__ == '__main__':
 
     [total_value, all_paths] = main(customers, home, trucks)
 
-    print(total_value)
+    print("La valeur totale obtenue par les différentes tourneés est : {}".format(total_value))
     print('\n')
-
-    print(all_paths)
+    for i,path in enumerate(all_paths):
+        print("la tournée du camion {} est : {}".format(i, path))

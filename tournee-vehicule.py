@@ -99,26 +99,14 @@ def remove_unaccessible_customers(customers, trucks, home):
             accessible_customers.append(customer)
     return accessible_customers
 
-# Afin d'avoir un rapport cohérent entre la distance et les valeurs des clients on applique un coeficient à la valeur.
-# L'interval des distances devient donc similaire à l'interval des valeurs
-def coef_reduce_value(area, home):
-    values = []
-    distances = []
-    for customer in area:
-        values.append(customer['value'])
-        distances.append(distance_between_customers(customer, home))
-    min_value = max(values)
-    min_distance = max(distances)
-    return min_distance / min_value
-
 # Cette fonction implémente l'algorithme du plus proche voisin.
 # On cherche ici à maximiser la distance. La distance n'est pas la distance euclidienne mais la valeur atténuée par le coef divisé par la distance euclidienne 
-def ppv(c, list_of_available_customers, coef):
+def ppv(c, list_of_available_customers):
     dist = 0
     choice = None
     for customer in list_of_available_customers:
         euclid_dist = distance_between_customers(c, customer)
-        new_dist = (coef * customer['value']) / euclid_dist
+        new_dist = (customer['value']) / euclid_dist
         if new_dist > dist:
             dist = new_dist
             choice = customer
@@ -129,11 +117,10 @@ def path_in_area(area, home, trucks):
     list_of_available_customers = area
     current_point = home
     fuel = trucks['distance']
-    coef = coef_reduce_value(area, home)
     path = [current_point]
     total_value = 0
     while (fuel >= distance_between_customers(current_point, home)) and (len(list_of_available_customers) > 0):
-        pot_next = ppv(current_point, area, coef)
+        pot_next = ppv(current_point, area)
         if fuel - (distance_between_customers(current_point, pot_next) + distance_between_customers(pot_next, home)) > 0 :
             fuel -= distance_between_customers(current_point, pot_next)
             current_point = pot_next

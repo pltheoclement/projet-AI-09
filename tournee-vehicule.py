@@ -1,5 +1,8 @@
 import json
 import numpy as np
+import matplotlib.pyplot as plt
+import random
+
 
 path = "./data.json"
 
@@ -145,15 +148,38 @@ def main(customers, home, trucks):
     return total_value, all_paths
 
 
+# Fonctionsservant à l'affichage des points
+def display_points(li, home):
+    x = np.array([])
+    y = np.array([])
+    for element in li:
+        x = np.append(x, element['x'])
+        y = np.append(y, element['y'])
+    plt.scatter(x, y,color="black")
+    plt.scatter(home['x'], home['y'],color="red")
+
+def display_path(all_path):
+    for path in all_path:
+        col = ["#"+''.join([random.choice('ABCDEF0123456789') for i in range(6)])][0]
+        for i, element in enumerate(path[:-1]):
+            x = [element['x'], path[i+1]['x']]
+            y = [element['y'], path[i+1]['y']]
+            plt.plot(x, y, color=col) 
+
 if __name__ == '__main__':
     jsonObject = format_json(path)
     trucks = get_trucks(jsonObject)
     home = get_home(jsonObject)
-    customers = remove_unaccessible_customers(get_customers(jsonObject), trucks, home)
+    customers = get_customers(jsonObject)
+    available_customer = remove_unaccessible_customers(customers, trucks, home)
+    display_points(customers, home)
 
-    [total_value, all_paths] = main(customers, home, trucks)
+    [total_value, all_paths] = main(available_customer, home, trucks)
 
     print("La valeur totale obtenue par les différentes tourneés est : {}".format(total_value))
     print('\n')
     for i,path in enumerate(all_paths):
         print("la tournée du camion {} est : {}".format(i, path))
+    display_points(customers, home)
+    display_path(all_paths)
+    plt.show()

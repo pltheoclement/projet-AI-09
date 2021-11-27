@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import random
 
 
-path = "./data.json"
+path = "./data_2.json"
 
 # Fonction permettant de récupérer les données depuis un fichier JSON
 def format_json(path):
@@ -168,9 +168,11 @@ def display_path(all_path):
 
 if __name__ == '__main__':
     jsonObject = format_json(path)
-    trucks = get_trucks(jsonObject)
-    home = get_home(jsonObject)
-    customers = get_customers(jsonObject)
+    instance_number = str(input("Entrez le numéro de l'instance voulue (entre 0 et 49)"))
+    instance = jsonObject[instance_number]
+    trucks = get_trucks(instance)
+    home = get_home(instance)
+    customers = get_customers(instance)
     available_customer = remove_unaccessible_customers(customers, trucks, home)
     display_points(customers, home)
 

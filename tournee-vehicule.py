@@ -184,4 +184,5 @@ if __name__ == '__main__':
         print("la tournée du camion {} est : {}".format(i, path))
     display_points(customers, home)
     display_path(all_paths)
+    plt.title('Instance numéro : {}\nLe score récolté est : {}'.format(instance_number, total_value))
     plt.show()

@@ -4,7 +4,8 @@ import matplotlib.pyplot as plt
 import random
 
 
-path = "./data_2.json"
+path = "./dataAntiSolver.json"
+
 
 # Fonction permettant de récupérer les données depuis un fichier JSON
 def format_json(path):
@@ -34,6 +35,7 @@ def get_home(jsonObject):
 # Catte fonction découpe l'espace en plusieurs zone. Le nombre de zones est déterminé par le nombre de camions.
 # Chaque camion fera une tournée dans une et une seule zone
 def get_areas(customers, nb_trucks):
+    aaa = 0
     # Dans le cas où il y a plus de camions que de clients, chaque zone représentera un seul client.
     nb_areas = min(nb_trucks, len(customers))
     centers = []
@@ -47,6 +49,8 @@ def get_areas(customers, nb_trucks):
     # On sépare l'espace actuel en nb_areas espaces
     # tant que le découpage en zone n'évolue pas d'une instance à l'autre on continue.
     while areas != old_areas:
+        aaa = aaa+1
+        print(aaa)
         old_areas = areas.copy()
         areas = [[] for i in range(nb_areas)]
         for customer in customers:
@@ -168,21 +172,18 @@ def display_path(all_path):
 
 if __name__ == '__main__':
     jsonObject = format_json(path)
-    instance_number = str(input("Entrez le numéro de l'instance voulue (entre 0 et 49)"))
-    instance = jsonObject[instance_number]
-    trucks = get_trucks(instance)
-    home = get_home(instance)
-    customers = get_customers(instance)
-    available_customer = remove_unaccessible_customers(customers, trucks, home)
-    display_points(customers, home)
+    for instance_number in range(1):
+        instance = jsonObject[str(instance_number)]
+        trucks = get_trucks(instance)
+        home = get_home(instance)
+        customers = get_customers(instance)
+        available_customer = remove_unaccessible_customers(customers, trucks, home)
+        display_points(customers, home)
 
-    [total_value, all_paths] = main(available_customer, home, trucks)
-
-    print("La valeur totale obtenue par les différentes tourneés est : {}".format(total_value))
-    print('\n')
-    for i,path in enumerate(all_paths):
-        print("la tournée du camion {} est : {}".format(i, path))
-    display_points(customers, home)
-    display_path(all_paths)
-    plt.title('Instance numéro : {}\nLe score récolté est : {}'.format(instance_number, total_value))
-    plt.show()
+        [total_value, all_paths] = main(available_customer, home, trucks)
+        # plt.figure(figsize=(2000, 2000))
+        display_points(customers, home)
+        display_path(all_paths)
+        plt.title('Instance numéro : {}\nLe score récolté est : {}'.format(instance_number, total_value))
+        plt.savefig("instance_{}.png".format(instance_number))
+        plt.close()

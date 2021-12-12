@@ -40,14 +40,14 @@ def get_areas(customers, nb_trucks):
     nb_areas = min(nb_trucks, len(customers))
     centers = []
 
-    # On choisi un client par zone pour débuter notre découpage
+    # On choisit un client par zone pour débuter notre découpage
     for n in range(nb_areas):
         centers.append(customers[n])
 
     areas = [[] for i in range(nb_areas)]
     old_areas = None
     # On sépare l'espace actuel en nb_areas espaces
-    # tant que le découpage en zone n'évolue pas d'une instance à l'autre on continue.
+    # tant que le découpage en zone n'évolue pas d'une instance à l'autre, on continue.
     while areas != old_areas:
         aaa = aaa+1
         print(aaa)
@@ -66,7 +66,7 @@ def get_areas(customers, nb_trucks):
             centers[n] = get_area_center(areas[n])
     return areas
 
-# FOnction servant à calculer le centre de gravité d'un nuage de point
+# Fonction servant à calculer le centre de gravité d'un nuage de point
 # On lui fournie une liste de points, elle en ressort son centre de gravité
 def get_area_center(l):
     x = 0
@@ -93,12 +93,12 @@ def distance_between_customers(c1, c2):
     d = np.linalg.norm(c1_coord-c2_coord)
     return d
 
-# FOnction permettant de retourner le premier index de la plus petite valeur d'une liste.
+# Fonction permettant de retourner le premier index de la plus petite valeur d'une liste.
 def get_index_of_min(l):
     temp = min(l)
     return [i for i, j in enumerate(l) if j == temp][0]
 
-# Certains clients ne sont pas acessibles par les camions, on les retire donc de notre domaine d'étude.
+# Certains clients ne sont pas accessibles par les camions, on les retire donc de notre domaine d'étude.
 def remove_unaccessible_customers(customers, trucks, home):
     accessible_customers = []
     for customer in customers:
@@ -119,7 +119,7 @@ def ppv(c, list_of_available_customers):
             choice = customer
     return choice
 
-# Cette fonction calcul le chemin d'un camion au sein d'un espace de recherche
+# Cette fonction calcule le chemin d'un camion au sein d'un espace de recherche
 def path_in_area(area, home, trucks):
     list_of_available_customers = area
     current_point = home
@@ -140,7 +140,7 @@ def path_in_area(area, home, trucks):
     path.append(home)
     return total_value, path
 
-# cette fonction fait boucler la précédente sur tous les espaces précédents et en retourne la valeur totale obtenue ainsi que l'ordre de visite des clients dans les différentes tournées.
+# cette fonction fait boucler la précédente sur tous les espaces précédents et en retourne la valeur totale obtenue ainsi que L'ordre de visite des clients dans les différentes tournées.
 def main(customers, home, trucks):
     areas = get_areas(customers, trucks['amount'])
     total_value = 0
@@ -152,7 +152,7 @@ def main(customers, home, trucks):
     return total_value, all_paths
 
 
-# Fonctionsservant à l'affichage des points
+# Fonctions servant à l'affichage des points
 def display_points(li, home):
     x = np.array([])
     y = np.array([])
